@@ -77,6 +77,19 @@ const upload = () => {
       uploadedFile.path,
       prepareInstructions({ jobTitle, jobDescription })
     );
+
+    if (!feedback) return setStatusText("Error: Failed to analyze the resume.");
+
+    const feedbackText =
+      typeof feedback.message.content === "string"
+        ? feedback.message.content
+        : feedback.message.content[0].text;
+
+    data.feedback = JSON.parse(feedbackText);
+    await kv.set(`resume:${uuid}`, JSON.stringify(data));
+    setStatusText("Analysis Complete, redirecting...");
+    console.log(data);
+    navigate(`/resume/${uuid}`);
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
